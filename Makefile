@@ -79,9 +79,12 @@ else
   endif
 endif
 
-ifneq ("$(wildcard boards/${BOARD}/hss.ld)", "")
-  LINKER_SCRIPT=boards/${BOARD}/hss.ld
+ifeq ("$(bootmode)", "0")
+  LINKER_SCRIPT=boards/${BOARD}/hss-l2lim.ld
 else
+  LINKER_SCRIPT=boards/${BOARD}/hss.ld
+endif
+ifeq ("$(wildcard ${LINKER_SCRIPT})", "")
   $(error Linker Script >>${LINKER_SCRIPT}<< not found)
 endif
 
