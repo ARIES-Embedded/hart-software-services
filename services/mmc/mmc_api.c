@@ -24,6 +24,9 @@
 
 #include "mmc_service.h"
 #include "encoding.h"
+#ifdef CONFIG_MODULE_M100PFS
+#include "mss_gpio.h"
+#endif
 #include "mss_mmc.h"
 #include "hal/hw_macros.h"
 
@@ -86,14 +89,22 @@ static bool mmc_init_common(mss_mmc_cfg_t *p_mmcConfig)
 static bool mmc_init_emmc(void)
 {
 #define LIBERO_SETTING_IOMUX1_CR_eMMC   0x11111111UL
+#ifdef CONFIG_MODULE_M100PFS
+#define LIBERO_SETTING_IOMUX2_CR_eMMC   0X00BB1111UL
+#else
 #define LIBERO_SETTING_IOMUX2_CR_eMMC   0x00FF1111UL
+#endif
 #define LIBERO_SETTING_IOMUX6_CR_eMMC   0x00000000UL
 
     SYSREG->IOMUX1_CR = LIBERO_SETTING_IOMUX1_CR_eMMC;
     SYSREG->IOMUX2_CR = LIBERO_SETTING_IOMUX2_CR_eMMC;
     SYSREG->IOMUX6_CR = LIBERO_SETTING_IOMUX6_CR_eMMC;
 
-    HW_set_uint32(SDIO_REGISTER_ADDRESS,  0);
+#ifdef CONFIG_MODULE_M100PFS
+    MSS_GPIO_set_output(GPIO0_LO, MSS_GPIO_12, 0);
+#else
+    HW_set_uint32(SDIO_REGISTER_ADDRESS, 0);
+#endif
 
     static mss_mmc_cfg_t emmcConfig =
     {
@@ -116,14 +127,23 @@ static bool mmc_init_emmc(void)
 static bool mmc_init_sdcard(void)
 {
 #define LIBERO_SETTING_IOMUX1_CR_SD   0x00000000UL
+#ifdef CONFIG_MODULE_M100PFS
+#define LIBERO_SETTING_IOMUX2_CR_SD   0X00BB0000UL
+#define LIBERO_SETTING_IOMUX6_CR_SD   0X0000001DUL
+#else
 #define LIBERO_SETTING_IOMUX2_CR_SD   0x00000000UL
 #define LIBERO_SETTING_IOMUX6_CR_SD   0x0000001DUL
+#endif
 
     SYSREG->IOMUX1_CR = LIBERO_SETTING_IOMUX1_CR_SD;
     SYSREG->IOMUX2_CR = LIBERO_SETTING_IOMUX2_CR_SD;
     SYSREG->IOMUX6_CR = LIBERO_SETTING_IOMUX6_CR_SD;
 
-    HW_set_uint32(SDIO_REGISTER_ADDRESS,  1);
+#ifdef CONFIG_MODULE_M100PFS
+    MSS_GPIO_set_output(GPIO0_LO, MSS_GPIO_12, 1);
+#else
+    HW_set_uint32(SDIO_REGISTER_ADDRESS, 1);
+#endif
 
     static mss_mmc_cfg_t sdcardConfig =
     {
@@ -145,6 +165,13 @@ static bool mmc_init_sdcard(void)
 bool HSS_MMCInit(void)
 {
     bool result = false;
+
+#ifdef CONFIG_MODULE_M100PFS
+    MSS_GPIO_init(GPIO0_LO);
+    MSS_GPIO_config(GPIO0_LO, MSS_GPIO_12, MSS_GPIO_OUTPUT_MODE);
+    MSS_GPIO_set_output(GPIO0_LO, MSS_GPIO_12, 0);
+#endif
+
     mmc_reset_block();
 
 #if defined(CONFIG_SERVICE_MMC_MODE_SDCARD)

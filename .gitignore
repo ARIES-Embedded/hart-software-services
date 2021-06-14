@@ -11,3 +11,4 @@
 config.h
 include/tool_versions.h
 fpgenprog
+boards/aries-m100pfsevp/soc_config
