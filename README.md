@@ -20,6 +20,7 @@ Source code is found under the `hart-software-services` folder.
     │   └── polarfire-soc-bare-metal-library (subtree)
     ├── boards
     │   ├── mpfs-icicle-kit-es (Icicle Kit)
+    │   ├── aries-m100pfsevp (Aries PolarFire SoC evaluation platform)
     │   ├── mpfs (Aloe Vera platform)
     │   └── lc-mpfs (Low-cost Aloe Vera platform)
     ├── compression
@@ -62,7 +63,7 @@ Both Linux and Windows are supported by Kconfiglib.  Kconfiglib is easily instal
  
     $ pip install kconfiglib
 
-The HSS supports a number of board targets - currently including PolarFireSoC-based boards (mpfs-icicle-kit-es), and SiFive FU540-based boards (lc-mpfs and mpfs).
+The HSS supports a number of board targets - currently including PolarFireSoC-based boards (mpfs-icicle-kit-es), SiFive FU540-based boards (lc-mpfs and mpfs), and Aries Embedded boards (aries-m100pfsevp).
 
 Once Kconfiglib is installed,  you can enter an interactive selection by running `make BOARD=mpfs-icicle-kit-es config`. This will generate a `.config` file (which is used to configure the Make build system) and a `config.h` header file (which is used to configure the source code):
 
